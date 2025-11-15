@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reto de Ahorro 365 – Billetera Virtual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Chart.js CDN para el gráfico -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.1);
+      --danger: #ef4444;
+      --success: #16a34a;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    header {
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      margin: 0 0 4px;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .card small {
+      color: var(--text-muted);
+    }
+
+    .wallet-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .wallet-total {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .wallet-currency {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .progress-wrapper {
+      margin-top: 10px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #2563eb);
+      transition: width 0.4s ease;
+    }
+
+    .field-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      flex: 1;
+      min-width: 90px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input[type="number"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        background 0.12s ease;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+      box-shadow: none;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .big-amount {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .big-amount span {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .amount-caption {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .stat-chip {
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border: 1px dashed #e5e7eb;
+      font-size: 0.8rem;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .tip {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #ecfdf5;
+      border-radius: 10px;
+      border: 1px solid #bbf7d0;
+      font-size: 0.85rem;
+      color: #166534;
+    }
+
+    .tip strong {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #15803d;
+    }
+
+    .chart-container {
+      margin-top: 10px;
+      height: 220px;
+    }
+
+    .list {
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .list-item:last-child {
+      border-bottom: none;
+    }
+
+    .list-item span.date {
+      color: var(--text-muted);
+    }
+
+    .message {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .message.positive {
+      color: var(--success);
+    }
+
+    .message.warning {
+      color: var(--danger);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Reto de Ahorro 365 – Billetera Virtual</h1>
+      <p>
+        Cada día, genera un monto aleatorio, guárdalo como ahorro y mira cómo
+        crece tu billetera y tu gráfico. Pequeños pasos, gran resultado.
+      </p>
+    </header>
+
+    <div class="grid">
+      <!-- Billetera y configuración -->
+      <section class="card">
+        <h2>Billetera de ahorro</h2>
+        <small>Resumen financiero de tu reto de ahorro.</small>
+
+        <div class="wallet-main">
+          <div>
+            <div class="wallet-total" id="totalSaved">0</div>
+            <div class="wallet-currency" id="currencyLabel">€ ahorrados</div>
+          </div>
+          <div class="badge" id="goalBadge">
+            🎯 Objetivo no definido
+          </div>
+        </div>
+
+        <div class="progress-wrapper">
+          <div class="progress-label">
+            <span>Progreso hacia tu objetivo</span>
+            <span id="goalPercent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field">
+            <label for="currencyInput">Moneda</label>
+            <input id="currencyInput" type="text" value="€" maxlength="3" />
+          </div>
+          <div class="field">
+            <label for="goalInput">Objetivo de ahorro</label>
+            <input id="goalInput" type="number" min="0" placeholder="Ej. 1000" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field">
+            <label for="minInput">Monto mínimo diario</label>
+            <input id="minInput" type="number" min="1" value="1" />
+          </div>
+          <div class="field">
+            <label for="maxInput">Monto máximo diario</label>
+            <input id="maxInput" type="number" min="1" value="365" />
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-sm" id="saveConfigBtn">
+            💾 Guardar configuración
+          </button>
+          <button class="btn btn-secondary btn-sm" id="resetDataBtn">
+            ♻️ Resetear datos
+          </button>
+        </div>
+
+        <div id="configMessage" class="message"></div>
+
+        <div class="stats-grid">
+          <div class="stat-chip">
+            <div class="stat-label">Días ahorrando</div>
+            <div class="stat-value" id="daysCount">0</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-label">Ahorro medio por día</div>
+            <div class="stat-value" id="avgPerDay">0</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-label">Día más fuerte</div>
+            <div class="stat-value" id="maxDay">–</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-label">Día más suave</div>
+            <div class="stat-value" id="minDay">–</div>
+          </div>
+        </div>
+
+        <div class="tip" id="tipBox">
+          <strong>Tip de ahorro</strong><br />
+          Guarda primero, gasta después: separa tu ahorro apenas recibes ingresos.
+        </div>
+      </section>
+
+      <!-- Generador, gráfico e historial -->
+      <section class="card">
+        <h2>Monto del día & evolución</h2>
+        <small>
+          Genera el monto de hoy, confírmalo y observa la curva de tu ahorro.
+        </small>
+
+        <div style="margin-top: 12px;">
+          <div class="big-amount">
+            <span id="todayAmount">0</span>
+            <span id="todayCurrency">€</span>
+          </div>
+          <div class="amount-caption" id="amountCaption">
+            Pulsa en “Generar monto de hoy” para empezar.
+          </div>
+
+          <div class="btn-row">
+            <button class="btn" id="generateBtn">
+              🎲 Generar monto de hoy
+            </button>
+            <button class="btn btn-secondary" id="saveDayBtn">
+              ✅ Guardar ahorro de hoy
+            </button>
+          </div>
+
+          <div id="dayMessage" class="message"></div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="savingsChart"></canvas>
+        </div>
+
+        <div class="list" id="historyList">
+          <!-- Historial de días se genera por JS -->
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ------- Modelo de datos y persistencia -------
+
+    const STORAGE_KEY = "savingWalletV2";
+
+    function loadWallet() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return {
+          currency: "€",
+          min: 1,
+          max: 365,
+          goal: null,
+          days: [], // { date: 'YYYY-MM-DD', amount: number }
+        };
+      }
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return {
+          currency: "€",
+          min: 1,
+          max: 365,
+          goal: null,
+          days: [],
+        };
+      }
+    }
+
+    function saveWallet(wallet) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(wallet));
+    }
+
+    let wallet = loadWallet();
+    let todayPendingAmount = null;
+    let chartInstance = null;
+
+    // ------- Referencias a elementos del DOM -------
+
+    const totalSavedEl = document.getElementById("totalSaved");
+    const currencyLabelEl = document.getElementById("currencyLabel");
+    const goalBadgeEl = document.getElementById("goalBadge");
+    const goalPercentEl = document.getElementById("goalPercent");
+    const progressFillEl = document.getElementById("progressFill");
+
+    const currencyInput = document.getElementById("currencyInput");
+    const goalInput = document.getElementById("goalInput");
+    const minInput = document.getElementById("minInput");
+    const maxInput = document.getElementById("maxInput");
+    const saveConfigBtn = document.getElementById("saveConfigBtn");
+    const resetDataBtn = document.getElementById("resetDataBtn");
+    const configMessageEl = document.getElementById("configMessage");
+
+    const daysCountEl = document.getElementById("daysCount");
+    const avgPerDayEl = document.getElementById("avgPerDay");
+    const maxDayEl = document.getElementById("maxDay");
+    const minDayEl = document.getElementById("minDay");
+    const tipBoxEl = document.getElementById("tipBox");
+
+    const todayAmountEl = document.getElementById("todayAmount");
+    const todayCurrencyEl = document.getElementById("todayCurrency");
+    const amountCaptionEl = document.getElementById("amountCaption");
+    const generateBtn = document.getElementById("generateBtn");
+    const saveDayBtn = document.getElementById("saveDayBtn");
+    const dayMessageEl = document.getElementById("dayMessage");
+
+    const historyListEl = document.getElementById("historyList");
+
+    // ------- Tips de ahorro (lista) -------
+
+    const SAVING_TIPS = [
+      "Ahorra primero, gasta después: separa tu ahorro apenas cobras.",
+      "Haz que el ahorro sea automático: configura transferencias programadas.",
+      "Evita compras impulsivas esperando 24 horas antes de decidir.",
+      "Define un objetivo concreto: cantidad + fecha límite.",
+      "Divide grandes objetivos en pequeñas metas mensuales.",
+      "Revisa tus suscripciones: cancela las que casi no usas.",
+      "Usa sobres digitales: separa dinero para cada categoría.",
+      "Cada subida de sueldo: aumenta también tu porcentaje de ahorro.",
+      "Celebra los pequeños avances, no solo el objetivo final.",
+      "Piensa en tu yo del futuro: tu ahorro es un regalo para él.",
+      "Antes de comprar pregunta: ¿lo necesito o solo lo deseo?",
+      "Registra tus gastos una semana: verás fugas invisibles.",
+      "Un pequeño ajuste diario puede ser un gran cambio anual."
+    ];
+
+    function getRandomTip() {
+      const index = Math.floor(Math.random() * SAVING_TIPS.length);
+      return SAVING_TIPS[index];
+    }
+
+    // ------- Utilidades -------
+
+    function formatCurrency(amount, currency) {
+      return amount.toLocaleString("es-ES", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) + " " + currency;
+    }
+
+    function getTodayISO() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    // ------- Render de UI -------
+
+    function renderWallet() {
+      const currency = wallet.currency || "€";
+      const total = wallet.days.reduce((sum, d) => sum + d.amount, 0);
+      totalSavedEl.textContent = total.toFixed(2);
+      currencyLabelEl.textContent = `${currency} ahorrados`;
+      todayCurrencyEl.textContent = currency;
+
+      const goal = wallet.goal;
+      if (goal && goal > 0) {
+        const percent = Math.min(100, Math.round((total / goal) * 100));
+        goalPercentEl.textContent = percent + "%";
+        progressFillEl.style.width = percent + "%";
+        goalBadgeEl.textContent =
+          percent >= 80
+            ? `🚀 Muy cerca de tu objetivo (${goal} ${currency})`
+            : `🎯 Objetivo: ${goal} ${currency}`;
+        if (percent >= 100) {
+          goalBadgeEl.textContent = `🏆 ¡Objetivo alcanzado!`;
+        }
+      } else {
+        goalPercentEl.textContent = "0%";
+        progressFillEl.style.width = "0%";
+        goalBadgeEl.textContent = "🎯 Objetivo no definido";
+      }
+
+      // Estadísticas
+      const daysCount = wallet.days.length;
+      daysCountEl.textContent = daysCount;
+      if (daysCount === 0) {
+        avgPerDayEl.textContent = "0";
+        maxDayEl.textContent = "–";
+        minDayEl.textContent = "–";
+      } else {
+        const amounts = wallet.days.map((d) => d.amount);
+        const avg = total / daysCount;
+        const max = Math.max(...amounts);
+        const min = Math.min(...amounts);
+        avgPerDayEl.textContent = avg.toFixed(2) + " " + currency;
+        maxDayEl.textContent = max.toFixed(2) + " " + currency;
+        minDayEl.textContent = min.toFixed(2) + " " + currency;
+      }
+
+      // Tip
+      if (daysCount > 0) {
+        tipBoxEl.innerHTML =
+          "<strong>Tip de ahorro</strong><br />" + getRandomTip();
+      }
+    }
+
+    function renderConfigInputs() {
+      currencyInput.value = wallet.currency || "€";
+      minInput.value = wallet.min ?? 1;
+      maxInput.value = wallet.max ?? 365;
+      goalInput.value = wallet.goal ?? "";
+    }
+
+    function renderHistory() {
+      historyListEl.innerHTML = "";
+      if (wallet.days.length === 0) {
+        historyListEl.innerHTML =
+          '<div class="list-item"><span>No hay registros aún.</span></div>';
+        return;
+      }
+      // Ordenar por fecha ascendente
+      const sorted = [...wallet.days].sort((a, b) =>
+        a.date.localeCompare(b.date)
+      );
+      sorted.forEach((d) => {
+        const row = document.createElement("div");
+        row.className = "list-item";
+        const dateSpan = document.createElement("span");
+        dateSpan.className = "date";
+        dateSpan.textContent = d.date;
+        const amountSpan = document.createElement("span");
+        amountSpan.textContent = d.amount.toFixed(2) + " " + wallet.currency;
+        row.appendChild(dateSpan);
+        row.appendChild(amountSpan);
+        historyListEl.appendChild(row);
+      });
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById("savingsChart");
+      const sorted = [...wallet.days].sort((a, b) =>
+        a.date.localeCompare(b.date)
+      );
+      const labels = [];
+      const data = [];
+      let acc = 0;
+      sorted.forEach((d) => {
+        labels.push(d.date);
+        acc += d.amount;
+        data.push(acc);
+      });
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Ahorro acumulado",
+              data,
+              fill: true,
+              tension: 0.25,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 6,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // ------- Eventos -------
+
+    saveConfigBtn.addEventListener("click", () => {
+      const currency = currencyInput.value.trim() || "€";
+      const min = Number(minInput.value);
+      const max = Number(maxInput.value);
+      const goalValue = goalInput.value.trim();
+      const goal = goalValue === "" ? null : Number(goalValue);
+
+      if (!Number.isFinite(min) || !Number.isFinite(max) || min <= 0 || max <= 0 || min > max) {
+        configMessageEl.textContent =
+          "Revisa los montos mínimo y máximo (deben ser números positivos y el mínimo no puede ser mayor al máximo).";
+        configMessageEl.className = "message warning";
+        return;
+      }
+
+      wallet.currency = currency;
+      wallet.min = min;
+      wallet.max = max;
+      wallet.goal = goal && goal > 0 ? goal : null;
+      saveWallet(wallet);
+      renderWallet();
+      renderHistory();
+      renderChart();
+
+      configMessageEl.textContent = "Configuración guardada correctamente.";
+      configMessageEl.className = "message positive";
+      setTimeout(() => {
+        configMessageEl.textContent = "";
+      }, 3000);
+    });
+
+    resetDataBtn.addEventListener("click", () => {
+      if (
+        !confirm(
+          "Esto eliminará todo tu historial de ahorro de este reto. ¿Seguro que quieres continuar?"
+        )
+      ) {
+        return;
+      }
+      wallet.days = [];
+      saveWallet(wallet);
+      todayPendingAmount = null;
+      todayAmountEl.textContent = "0";
+      amountCaptionEl.textContent =
+        "Pulsa en “Generar monto de hoy” para empezar.";
+      dayMessageEl.textContent = "";
+      renderWallet();
+      renderHistory();
+      renderChart();
+    });
+
+    generateBtn.addEventListener("click", () => {
+      const min = wallet.min ?? 1;
+      const max = wallet.max ?? 365;
+      const amount =
+        Math.floor(Math.random() * (max - min + 1)) + min;
+
+      todayPendingAmount = amount;
+      todayAmountEl.textContent = amount.toFixed(2);
+      amountCaptionEl.textContent =
+        "Este es el monto sugerido para ahorrar hoy. Si te parece razonable, guárdalo.";
+      dayMessageEl.textContent = "";
+      dayMessageEl.className = "message";
+    });
+
+    saveDayBtn.addEventListener("click", () => {
+      if (todayPendingAmount === null) {
+        dayMessageEl.textContent =
+          "Primero genera un monto para hoy antes de guardarlo.";
+        dayMessageEl.className = "message warning";
+        return;
+      }
+
+      const today = getTodayISO();
+
+      // Si ya existe registro para hoy, lo actualizamos (decisión de diseño)
+      const existingIndex = wallet.days.findIndex((d) => d.date === today);
+      if (existingIndex >= 0) {
+        wallet.days[existingIndex].amount = todayPendingAmount;
+      } else {
+        wallet.days.push({ date: today, amount: todayPendingAmount });
+      }
+
+      saveWallet(wallet);
+      renderWallet();
+      renderHistory();
+      renderChart();
+
+      dayMessageEl.textContent =
+        "Ahorro de hoy registrado. Buen movimiento para tu yo del futuro.";
+      dayMessageEl.className = "message positive";
+
+      // Reseteamos el monto pendiente, pero visualmente lo dejamos
+      todayPendingAmount = null;
+    });
+
+    // ------- Inicialización -------
+
+    function init() {
+      renderConfigInputs();
+      renderWallet();
+      renderHistory();
+      renderChart();
+    }
+
+    init();
+  </script>
+</body>
+</html>

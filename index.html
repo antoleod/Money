@@ -2,23 +2,26 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Reto de Ahorro 365 – Billetera Virtual</title>
+  <title>Reto de Ahorro 365 – Billetera Virtual v2.1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Chart.js CDN para el gráfico -->
+  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.1);
-      --danger: #ef4444;
-      --success: #16a34a;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --bg1: #020617;
+      --bg2: #0f172a;
+      --bg3: #1e293b;
+      --card: rgba(15, 23, 42, 0.9);
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --accent-soft: rgba(56, 189, 248, 0.18);
+      --danger: #fb7185;
+      --success: #22c55e;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border: rgba(148, 163, 184, 0.35);
+      --radius: 16px;
+      --shadow-strong: 0 18px 45px rgba(15, 23, 42, 0.85);
     }
 
     * {
@@ -29,91 +32,172 @@
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
-      background: var(--bg);
       color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       padding: 16px;
+      background: radial-gradient(circle at top, var(--bg3), var(--bg1));
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Fondo animado */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.2), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(52, 211, 153, 0.14), transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(129, 140, 248, 0.18), transparent 55%);
+      filter: blur(40px);
+      opacity: 0.8;
+      z-index: -2;
+      animation: bgPulse 16s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgPulse {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(-4%, 2%, 0) scale(1.05);
+      }
+      100% {
+        transform: translate3d(4%, -3%, 0) scale(1.02);
+      }
     }
 
     .app {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1080px;
     }
 
     header {
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     header h1 {
-      margin: 0 0 4px;
-      font-size: 1.6rem;
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      letter-spacing: 0.03em;
     }
 
     header p {
       margin: 0;
       color: var(--text-muted);
       font-size: 0.9rem;
+      max-width: 640px;
     }
 
     .grid {
       display: grid;
       grid-template-columns: 1.1fr 1.1fr;
-      gap: 16px;
+      gap: 18px;
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 880px) {
       .grid {
         grid-template-columns: 1fr;
       }
     }
 
     .card {
-      background: var(--card);
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
       border-radius: var(--radius);
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
+      padding: 16px 18px 18px;
+      box-shadow: var(--shadow-strong);
       border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        conic-gradient(from 130deg,
+          transparent 0deg,
+          rgba(56, 189, 248, 0.15) 80deg,
+          transparent 150deg,
+          rgba(52, 211, 153, 0.16) 220deg,
+          transparent 300deg);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: -1;
+    }
+
+    .card:hover::before {
+      opacity: 1;
     }
 
     .card h2 {
-      margin: 0 0 8px;
+      margin: 0 0 6px;
       font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .card small {
       color: var(--text-muted);
     }
 
+    .pill-label {
+      font-size: 0.72rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
     .wallet-main {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-top: 12px;
+      margin-top: 14px;
       margin-bottom: 12px;
     }
 
     .wallet-total {
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 700;
+      text-shadow: 0 0 22px rgba(56, 189, 248, 0.45);
     }
 
     .wallet-currency {
       font-size: 0.9rem;
       color: var(--text-muted);
-      margin-left: 4px;
+      margin-top: 4px;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 2px 8px;
+      padding: 4px 9px;
       border-radius: 999px;
-      background: var(--accent-soft);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.3), rgba(15, 23, 42, 0.9));
       color: var(--accent);
       font-size: 0.75rem;
       font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.32);
+    }
+
+    .glow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.9);
+      animation: pulseDot 1.4s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.35); opacity: 1; }
     }
 
     .progress-wrapper {
@@ -130,23 +214,35 @@
 
     .progress-bar {
       width: 100%;
-      height: 10px;
+      height: 12px;
       border-radius: 999px;
-      background: #e5e7eb;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
       overflow: hidden;
+      position: relative;
     }
 
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #22c55e, #2563eb);
-      transition: width 0.4s ease;
+      background: linear-gradient(90deg, #22c55e, #38bdf8, #a855f7);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.6);
+    }
+
+    .progress-bar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.2), transparent 55%);
+      mix-blend-mode: screen;
+      opacity: 0.8;
     }
 
     .field-group {
       display: flex;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 12px;
       flex-wrap: wrap;
     }
 
@@ -166,100 +262,183 @@
     input[type="text"] {
       width: 100%;
       padding: 7px 9px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+      border-radius: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
       font-size: 0.9rem;
       outline: none;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 
     input[type="number"]:focus,
     input[type="text"]:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px var(--accent-soft);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 1),
+        0 0 20px rgba(56, 189, 248, 0.6);
     }
 
     .btn {
       border: none;
       border-radius: 999px;
-      padding: 8px 14px;
-      background: var(--accent);
+      padding: 9px 16px;
+      background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
       color: white;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease,
+      gap: 7px;
+      transition:
+        transform 0.09s ease,
+        box-shadow 0.09s ease,
+        filter 0.15s ease,
         background 0.12s ease;
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0.16), transparent 65%);
+      opacity: 0;
+      transform: translateX(-40%);
+      transition: opacity 0.2s ease, transform 0.3s ease;
+    }
+
+    .btn:hover::after {
+      opacity: 1;
+      transform: translateX(10%);
     }
 
     .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
+      transform: translateY(-1px) translateZ(0);
+      box-shadow: 0 15px 40px rgba(56, 189, 248, 0.7);
+      filter: brightness(1.08);
     }
 
     .btn:active {
       transform: translateY(0);
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 6px 18px rgba(56, 189, 248, 0.6);
+      filter: brightness(0.98);
     }
 
     .btn-secondary {
-      background: #e5e7eb;
-      color: #111827;
-      box-shadow: none;
+      background: radial-gradient(circle at top left, #4b5563, #1f2933);
+      box-shadow: 0 7px 20px rgba(15, 23, 42, 0.8);
     }
 
-    .btn-secondary:hover {
-      background: #d1d5db;
+    .btn-secondary::after {
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0.1), transparent 65%);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, 0.8);
       box-shadow: none;
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+      background: rgba(15, 23, 42, 0.9);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.9);
     }
 
     .btn-sm {
-      padding: 6px 10px;
-      font-size: 0.8rem;
+      padding: 7px 12px;
+      font-size: 0.78rem;
     }
 
     .btn-row {
       display: flex;
       gap: 8px;
-      margin-top: 12px;
+      margin-top: 14px;
       flex-wrap: wrap;
     }
 
     .big-amount {
-      font-size: 2rem;
+      font-size: 2.1rem;
       font-weight: 700;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      letter-spacing: 0.02em;
+      margin-top: 8px;
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
+      animation: fadeInUp 0.4s ease;
     }
 
-    .big-amount span {
+    .big-amount span.suffix {
       font-size: 1rem;
       color: var(--text-muted);
       font-weight: 500;
-      margin-left: 4px;
     }
 
     .amount-caption {
       font-size: 0.8rem;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 4px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .step-indicator {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .step-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      color: rgba(148, 163, 184, 0.8);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .step-dot.active {
+      border-color: var(--accent);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.7), rgba(15, 23, 42, 0.96));
+      color: white;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.8);
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     .stat-chip {
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 8px 10px;
-      background: #f9fafb;
-      border: 1px dashed #e5e7eb;
-      font-size: 0.8rem;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.78rem;
     }
 
     .stat-label {
@@ -269,46 +448,57 @@
 
     .stat-value {
       font-weight: 600;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .tip {
-      margin-top: 10px;
-      padding: 8px 10px;
-      background: #ecfdf5;
-      border-radius: 10px;
-      border: 1px solid #bbf7d0;
-      font-size: 0.85rem;
-      color: #166534;
+      margin-top: 12px;
+      padding: 9px 11px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.25), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      font-size: 0.84rem;
+      color: #bbf7d0;
+      box-shadow: 0 0 18px rgba(34, 197, 94, 0.4);
     }
 
     .tip strong {
       font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #15803d;
+      letter-spacing: 0.08em;
+      color: #bbf7d0;
     }
 
     .chart-container {
-      margin-top: 10px;
-      height: 220px;
+      margin-top: 14px;
+      height: 240px;
+      position: relative;
+    }
+
+    .chart-container::before {
+      content: "";
+      position: absolute;
+      inset: 12px 10px 6px;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      pointer-events: none;
     }
 
     .list {
-      margin-top: 10px;
-      max-height: 200px;
+      margin-top: 12px;
+      max-height: 210px;
       overflow-y: auto;
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
     }
 
     .list-item {
       display: flex;
       justify-content: space-between;
-      padding: 6px 10px;
+      padding: 7px 12px;
       font-size: 0.8rem;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
     }
 
     .list-item:last-child {
@@ -332,27 +522,69 @@
     .message.warning {
       color: var(--danger);
     }
+
+    .confirm-row {
+      margin-top: 10px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.2), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      font-size: 0.8rem;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .edit-inline {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+    }
+
+    .edit-inline input[type="number"] {
+      max-width: 120px;
+    }
+
+    .sub-label {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .empty-history {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <header>
+      <p class="pill-label">Modo táctica de ahorro</p>
       <h1>Reto de Ahorro 365 – Billetera Virtual</h1>
       <p>
-        Cada día, genera un monto aleatorio, guárdalo como ahorro y mira cómo
-        crece tu billetera y tu gráfico. Pequeños pasos, gran resultado.
+        Cada día, el sistema te propone un monto único para ahorrar. Confirmas,
+        lo ajustas si hace falta y ves tu progreso en tiempo real con una
+        billetera futurista y un gráfico vivo.
       </p>
     </header>
 
     <div class="grid">
       <!-- Billetera y configuración -->
       <section class="card">
-        <h2>Billetera de ahorro</h2>
-        <small>Resumen financiero de tu reto de ahorro.</small>
+        <h2><span class="glow-dot"></span> Billetera de ahorro</h2>
+        <small>Panel de control de tu estrategia de ahorro.</small>
 
         <div class="wallet-main">
           <div>
-            <div class="wallet-total" id="totalSaved">0</div>
+            <div class="wallet-total" id="totalSaved">0.00</div>
             <div class="wallet-currency" id="currencyLabel">€ ahorrados</div>
           </div>
           <div class="badge" id="goalBadge">
@@ -376,7 +608,7 @@
             <input id="currencyInput" type="text" value="€" maxlength="3" />
           </div>
           <div class="field">
-            <label for="goalInput">Objetivo de ahorro</label>
+            <label for="goalInput">Objetivo de ahorro total</label>
             <input id="goalInput" type="number" min="0" placeholder="Ej. 1000" />
           </div>
         </div>
@@ -390,6 +622,9 @@
             <label for="maxInput">Monto máximo diario</label>
             <input id="maxInput" type="number" min="1" value="365" />
           </div>
+        </div>
+        <div class="sub-label">
+          Cada número entre mínimo y máximo solo aparecerá una vez por ciclo.
         </div>
 
         <div class="btn-row">
@@ -405,7 +640,7 @@
 
         <div class="stats-grid">
           <div class="stat-chip">
-            <div class="stat-label">Días ahorrando</div>
+            <div class="stat-label">Días registrados</div>
             <div class="stat-value" id="daysCount">0</div>
           </div>
           <div class="stat-chip">
@@ -430,27 +665,53 @@
 
       <!-- Generador, gráfico e historial -->
       <section class="card">
-        <h2>Monto del día & evolución</h2>
+        <h2>Modo aleatorio & evolución</h2>
         <small>
-          Genera el monto de hoy, confírmalo y observa la curva de tu ahorro.
+          Genera un monto único, confirma si realmente lo ahorraste hoy y observa
+          cómo asciende tu curva de capital.
         </small>
 
-        <div style="margin-top: 12px;">
+        <div class="step-indicator">
+          <div class="step-dot active" id="step1Dot">1</div> Generar monto
+          <div class="step-dot" id="step2Dot">2</div> Confirmar ahorro
+        </div>
+
+        <div style="margin-top: 10px;">
           <div class="big-amount">
             <span id="todayAmount">0</span>
-            <span id="todayCurrency">€</span>
+            <span class="suffix" id="todayCurrency">€</span>
           </div>
           <div class="amount-caption" id="amountCaption">
-            Pulsa en “Generar monto de hoy” para empezar.
+            Pulsa en “Generar monto de hoy” para iniciar el reto de hoy.
           </div>
 
           <div class="btn-row">
             <button class="btn" id="generateBtn">
               🎲 Generar monto de hoy
             </button>
-            <button class="btn btn-secondary" id="saveDayBtn">
-              ✅ Guardar ahorro de hoy
-            </button>
+          </div>
+
+          <div class="confirm-row" id="confirmRow" style="display:none;">
+            <div>
+              ¿Se ahorra este monto hoy?
+              <div class="sub-label">
+                Marca “Sí” si realmente apartaste este dinero. Si no, ajusta el
+                monto a lo que ahorraste de verdad.
+              </div>
+            </div>
+            <div class="confirm-actions">
+              <button class="btn btn-sm" id="confirmYesBtn">✅ Sí, se ahorra</button>
+              <button class="btn btn-outline btn-sm" id="editAmountBtn">
+                ✏️ No, quiero editar
+              </button>
+            </div>
+            <div class="edit-inline" id="editInline" style="display:none;">
+              <span>Monto realmente ahorrado hoy:</span>
+              <input id="editedAmountInput" type="number" min="0" />
+              <button class="btn btn-secondary btn-sm" id="saveEditedBtn">
+                💾 Guardar monto editado
+              </button>
+            </div>
           </div>
 
           <div id="dayMessage" class="message"></div>
@@ -461,7 +722,7 @@
         </div>
 
         <div class="list" id="historyList">
-          <!-- Historial de días se genera por JS -->
+          <!-- Historial generado por JS -->
         </div>
       </section>
     </div>
@@ -470,7 +731,7 @@
   <script>
     // ------- Modelo de datos y persistencia -------
 
-    const STORAGE_KEY = "savingWalletV2";
+    const STORAGE_KEY = "savingWalletV21";
 
     function loadWallet() {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -480,11 +741,15 @@
           min: 1,
           max: 365,
           goal: null,
-          days: [], // { date: 'YYYY-MM-DD', amount: number }
+          days: [],       // { date: 'YYYY-MM-DD', amount: number }
+          usedAmounts: [] // montos ya propuestos por el modo aleatorio
         };
       }
       try {
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        if (!parsed.usedAmounts) parsed.usedAmounts = [];
+        if (!parsed.days) parsed.days = [];
+        return parsed;
       } catch {
         return {
           currency: "€",
@@ -492,6 +757,7 @@
           max: 365,
           goal: null,
           days: [],
+          usedAmounts: []
         };
       }
     }
@@ -501,7 +767,8 @@
     }
 
     let wallet = loadWallet();
-    let todayPendingAmount = null;
+    let todayPendingAmount = null;    // monto propuesto por el modo aleatorio
+    let suggestionLocked = false;     // para no generar 2 veces sin confirmar
     let chartInstance = null;
 
     // ------- Referencias a elementos del DOM -------
@@ -530,12 +797,21 @@
     const todayCurrencyEl = document.getElementById("todayCurrency");
     const amountCaptionEl = document.getElementById("amountCaption");
     const generateBtn = document.getElementById("generateBtn");
-    const saveDayBtn = document.getElementById("saveDayBtn");
     const dayMessageEl = document.getElementById("dayMessage");
+
+    const confirmRowEl = document.getElementById("confirmRow");
+    const confirmYesBtn = document.getElementById("confirmYesBtn");
+    const editAmountBtn = document.getElementById("editAmountBtn");
+    const editInlineEl = document.getElementById("editInline");
+    const editedAmountInput = document.getElementById("editedAmountInput");
+    const saveEditedBtn = document.getElementById("saveEditedBtn");
 
     const historyListEl = document.getElementById("historyList");
 
-    // ------- Tips de ahorro (lista) -------
+    const step1Dot = document.getElementById("step1Dot");
+    const step2Dot = document.getElementById("step2Dot");
+
+    // ------- Tips de ahorro -------
 
     const SAVING_TIPS = [
       "Ahorra primero, gasta después: separa tu ahorro apenas cobras.",
@@ -543,14 +819,14 @@
       "Evita compras impulsivas esperando 24 horas antes de decidir.",
       "Define un objetivo concreto: cantidad + fecha límite.",
       "Divide grandes objetivos en pequeñas metas mensuales.",
-      "Revisa tus suscripciones: cancela las que casi no usas.",
+      "Revisa tus suscripciones y elimina las que casi no usas.",
       "Usa sobres digitales: separa dinero para cada categoría.",
-      "Cada subida de sueldo: aumenta también tu porcentaje de ahorro.",
-      "Celebra los pequeños avances, no solo el objetivo final.",
+      "En cada subida de sueldo, aumenta también tu porcentaje de ahorro.",
+      "Celebra cada pequeño avance, no solo el objetivo final.",
       "Piensa en tu yo del futuro: tu ahorro es un regalo para él.",
-      "Antes de comprar pregunta: ¿lo necesito o solo lo deseo?",
+      "Antes de comprar, pregúntate: ¿lo necesito o solo lo deseo?",
       "Registra tus gastos una semana: verás fugas invisibles.",
-      "Un pequeño ajuste diario puede ser un gran cambio anual."
+      "Un pequeño ajuste diario puede convertirse en un gran cambio anual."
     ];
 
     function getRandomTip() {
@@ -560,13 +836,6 @@
 
     // ------- Utilidades -------
 
-    function formatCurrency(amount, currency) {
-      return amount.toLocaleString("es-ES", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }) + " " + currency;
-    }
-
     function getTodayISO() {
       const d = new Date();
       const year = d.getFullYear();
@@ -575,7 +844,18 @@
       return `${year}-${month}-${day}`;
     }
 
-    // ------- Render de UI -------
+    function getAvailableAmounts() {
+      const min = wallet.min ?? 1;
+      const max = wallet.max ?? 365;
+      const used = new Set(wallet.usedAmounts || []);
+      const available = [];
+      for (let v = min; v <= max; v++) {
+        if (!used.has(v)) available.push(v);
+      }
+      return available;
+    }
+
+    // ------- Render UI -------
 
     function renderWallet() {
       const currency = wallet.currency || "€";
@@ -589,12 +869,12 @@
         const percent = Math.min(100, Math.round((total / goal) * 100));
         goalPercentEl.textContent = percent + "%";
         progressFillEl.style.width = percent + "%";
-        goalBadgeEl.textContent =
-          percent >= 80
-            ? `🚀 Muy cerca de tu objetivo (${goal} ${currency})`
-            : `🎯 Objetivo: ${goal} ${currency}`;
         if (percent >= 100) {
-          goalBadgeEl.textContent = `🏆 ¡Objetivo alcanzado!`;
+          goalBadgeEl.innerHTML = "🏆 Objetivo alcanzado";
+        } else if (percent >= 80) {
+          goalBadgeEl.innerHTML = `<span class="glow-dot"></span> A un paso del objetivo (${goal} ${currency})`;
+        } else {
+          goalBadgeEl.innerHTML = `<span class="glow-dot"></span> Objetivo: ${goal} ${currency}`;
         }
       } else {
         goalPercentEl.textContent = "0%";
@@ -602,7 +882,6 @@
         goalBadgeEl.textContent = "🎯 Objetivo no definido";
       }
 
-      // Estadísticas
       const daysCount = wallet.days.length;
       daysCountEl.textContent = daysCount;
       if (daysCount === 0) {
@@ -614,12 +893,11 @@
         const avg = total / daysCount;
         const max = Math.max(...amounts);
         const min = Math.min(...amounts);
-        avgPerDayEl.textContent = avg.toFixed(2) + " " + currency;
-        maxDayEl.textContent = max.toFixed(2) + " " + currency;
-        minDayEl.textContent = min.toFixed(2) + " " + currency;
+        avgPerDayEl.textContent = `${avg.toFixed(2)} ${currency}`;
+        maxDayEl.textContent = `${max.toFixed(2)} ${currency}`;
+        minDayEl.textContent = `${min.toFixed(2)} ${currency}`;
       }
 
-      // Tip
       if (daysCount > 0) {
         tipBoxEl.innerHTML =
           "<strong>Tip de ahorro</strong><br />" + getRandomTip();
@@ -636,11 +914,12 @@
     function renderHistory() {
       historyListEl.innerHTML = "";
       if (wallet.days.length === 0) {
-        historyListEl.innerHTML =
-          '<div class="list-item"><span>No hay registros aún.</span></div>';
+        const div = document.createElement("div");
+        div.className = "empty-history";
+        div.textContent = "No hay registros aún.";
+        historyListEl.appendChild(div);
         return;
       }
-      // Ordenar por fecha ascendente
       const sorted = [...wallet.days].sort((a, b) =>
         a.date.localeCompare(b.date)
       );
@@ -676,6 +955,11 @@
         chartInstance.destroy();
       }
 
+      const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 220);
+      gradient.addColorStop(0, "rgba(56, 189, 248, 0.6)");
+      gradient.addColorStop(0.5, "rgba(34, 197, 94, 0.4)");
+      gradient.addColorStop(1, "rgba(15, 23, 42, 0.1)");
+
       chartInstance = new Chart(ctx, {
         type: "line",
         data: {
@@ -684,8 +968,15 @@
             {
               label: "Ahorro acumulado",
               data,
+              borderColor: "#38bdf8",
+              borderWidth: 2.4,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              pointBackgroundColor: "#f9fafb",
+              pointBorderColor: "#38bdf8",
               fill: true,
-              tension: 0.25,
+              backgroundColor: gradient,
+              tension: 0.3,
             },
           ],
         },
@@ -696,20 +987,63 @@
             legend: {
               display: false,
             },
+            tooltip: {
+              backgroundColor: "rgba(15,23,42,0.95)",
+              borderColor: "rgba(148,163,184,0.8)",
+              borderWidth: 1,
+              padding: 8,
+            },
           },
           scales: {
             x: {
               ticks: {
+                color: "#9ca3af",
                 autoSkip: true,
                 maxTicksLimit: 6,
               },
+              grid: {
+                color: "rgba(51, 65, 85, 0.7)",
+              },
             },
+            y: {
+              ticks: {
+                color: "#9ca3af",
+              },
+              grid: {
+                color: "rgba(30, 64, 175, 0.35)",
+              },
+            },
+          },
+          animation: {
+            duration: 600,
           },
         },
       });
     }
 
-    // ------- Eventos -------
+    function updateStepIndicator(step) {
+      if (step === 1) {
+        step1Dot.classList.add("active");
+        step2Dot.classList.remove("active");
+      } else {
+        step1Dot.classList.remove("active");
+        step2Dot.classList.add("active");
+      }
+    }
+
+    function clearDayUI() {
+      todayPendingAmount = null;
+      suggestionLocked = false;
+      confirmRowEl.style.display = "none";
+      editInlineEl.style.display = "none";
+      dayMessageEl.textContent = "";
+      dayMessageEl.className = "message";
+      amountCaptionEl.textContent =
+        "Pulsa en “Generar monto de hoy” para iniciar el reto de hoy.";
+      updateStepIndicator(1);
+    }
+
+    // ------- Eventos: configuración -------
 
     saveConfigBtn.addEventListener("click", () => {
       const currency = currencyInput.value.trim() || "€";
@@ -720,7 +1054,7 @@
 
       if (!Number.isFinite(min) || !Number.isFinite(max) || min <= 0 || max <= 0 || min > max) {
         configMessageEl.textContent =
-          "Revisa los montos mínimo y máximo (deben ser números positivos y el mínimo no puede ser mayor al máximo).";
+          "Revisa los montos mínimo y máximo (deben ser positivos y el mínimo no puede ser mayor al máximo).";
         configMessageEl.className = "message warning";
         return;
       }
@@ -729,6 +1063,12 @@
       wallet.min = min;
       wallet.max = max;
       wallet.goal = goal && goal > 0 ? goal : null;
+
+      // Ajustar lista de montos usados al nuevo rango
+      wallet.usedAmounts = (wallet.usedAmounts || []).filter(
+        (v) => v >= min && v <= max
+      );
+
       saveWallet(wallet);
       renderWallet();
       renderHistory();
@@ -744,53 +1084,95 @@
     resetDataBtn.addEventListener("click", () => {
       if (
         !confirm(
-          "Esto eliminará todo tu historial de ahorro de este reto. ¿Seguro que quieres continuar?"
+          "Esto eliminará todo tu historial y la lista de montos usados. ¿Seguro que quieres continuar?"
         )
       ) {
         return;
       }
       wallet.days = [];
+      wallet.usedAmounts = [];
       saveWallet(wallet);
-      todayPendingAmount = null;
       todayAmountEl.textContent = "0";
-      amountCaptionEl.textContent =
-        "Pulsa en “Generar monto de hoy” para empezar.";
-      dayMessageEl.textContent = "";
+      clearDayUI();
       renderWallet();
       renderHistory();
       renderChart();
     });
 
+    // ------- Eventos: modo aleatorio y confirmación -------
+
     generateBtn.addEventListener("click", () => {
-      const min = wallet.min ?? 1;
-      const max = wallet.max ?? 365;
-      const amount =
-        Math.floor(Math.random() * (max - min + 1)) + min;
-
-      todayPendingAmount = amount;
-      todayAmountEl.textContent = amount.toFixed(2);
-      amountCaptionEl.textContent =
-        "Este es el monto sugerido para ahorrar hoy. Si te parece razonable, guárdalo.";
-      dayMessageEl.textContent = "";
-      dayMessageEl.className = "message";
-    });
-
-    saveDayBtn.addEventListener("click", () => {
-      if (todayPendingAmount === null) {
+      if (suggestionLocked) {
         dayMessageEl.textContent =
-          "Primero genera un monto para hoy antes de guardarlo.";
+          "Ya tienes un monto propuesto para hoy. Confirma o edítalo antes de generar otro.";
         dayMessageEl.className = "message warning";
         return;
       }
 
-      const today = getTodayISO();
+      const available = getAvailableAmounts();
+      if (available.length === 0) {
+        dayMessageEl.textContent =
+          "Has utilizado todos los montos disponibles en este rango. Cambia el rango o resetea los datos para iniciar un nuevo ciclo.";
+        dayMessageEl.className = "message warning";
+        confirmRowEl.style.display = "none";
+        editInlineEl.style.display = "none";
+        return;
+      }
 
-      // Si ya existe registro para hoy, lo actualizamos (decisión de diseño)
+      const randomIndex = Math.floor(Math.random() * (available.length));
+      const amount = available[randomIndex];
+
+      todayPendingAmount = amount;
+      suggestionLocked = true;
+
+      // Guardar este monto en la lista de montos ya usados
+      if (!wallet.usedAmounts.includes(amount)) {
+        wallet.usedAmounts.push(amount);
+        saveWallet(wallet);
+      }
+
+      todayAmountEl.textContent = amount.toFixed(2);
+      amountCaptionEl.textContent =
+        "Este es el monto sugerido para ahorrar hoy. Ahora confirmamos si realmente lo ahorraste.";
+      dayMessageEl.textContent = "";
+      dayMessageEl.className = "message";
+      confirmRowEl.style.display = "block";
+      editInlineEl.style.display = "none";
+      updateStepIndicator(2);
+    });
+
+    confirmYesBtn.addEventListener("click", () => {
+      if (todayPendingAmount === null) {
+        return;
+      }
+      saveDayAmount(todayPendingAmount);
+    });
+
+    editAmountBtn.addEventListener("click", () => {
+      if (todayPendingAmount === null) return;
+      editInlineEl.style.display = "flex";
+      editedAmountInput.value = todayPendingAmount.toFixed(2);
+      editedAmountInput.focus();
+    });
+
+    saveEditedBtn.addEventListener("click", () => {
+      const value = Number(editedAmountInput.value);
+      if (!Number.isFinite(value) || value < 0) {
+        dayMessageEl.textContent =
+          "Introduce un monto válido (0 o más).";
+        dayMessageEl.className = "message warning";
+        return;
+      }
+      saveDayAmount(value);
+    });
+
+    function saveDayAmount(amountToSave) {
+      const today = getTodayISO();
       const existingIndex = wallet.days.findIndex((d) => d.date === today);
       if (existingIndex >= 0) {
-        wallet.days[existingIndex].amount = todayPendingAmount;
+        wallet.days[existingIndex].amount = amountToSave;
       } else {
-        wallet.days.push({ date: today, amount: todayPendingAmount });
+        wallet.days.push({ date: today, amount: amountToSave });
       }
 
       saveWallet(wallet);
@@ -801,10 +1183,14 @@
       dayMessageEl.textContent =
         "Ahorro de hoy registrado. Buen movimiento para tu yo del futuro.";
       dayMessageEl.className = "message positive";
-
-      // Reseteamos el monto pendiente, pero visualmente lo dejamos
+      confirmRowEl.style.display = "none";
+      editInlineEl.style.display = "none";
+      updateStepIndicator(1);
+      suggestionLocked = false;
       todayPendingAmount = null;
-    });
+      amountCaptionEl.textContent =
+        "Reto de hoy completado. Mañana tendrás un nuevo monto único.";
+    }
 
     // ------- Inicialización -------
 
@@ -813,9 +1199,10 @@
       renderWallet();
       renderHistory();
       renderChart();
+      clearDayUI();
     }
 
     init();
   </script>
 </body>
-</html>
+  </html>

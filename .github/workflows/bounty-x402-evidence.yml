@@ -3,46 +3,78 @@ name: x402 bounty evidence
 on:
   push:
     branches: [bounty-x402-evidence]
+    paths:
+      - '.github/workflows/bounty-x402-evidence.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   probe:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Capture raw curl evidence
+      - uses: actions/checkout@v4
+        with:
+          ref: bounty-x402-evidence
+
+      - name: Capture full raw curl evidence
         shell: bash
         run: |
           set +e
-          echo "TEST_UTC=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          echo "curl=$(curl --version | head -1)"
+          mkdir -p evidence/x402-2026-09-04
+          META=evidence/x402-2026-09-04/00-environment.txt
+          {
+            echo "TEST_UTC=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "runner=$(uname -a)"
+            echo "curl=$(curl --version | head -1)"
+          } | tee "$META"
+
           probe() {
+            file="$1"; shift
             label="$1"; shift
-            echo
-            echo "==================== ${label} ===================="
-            echo "COMMAND: curl -skv --max-time 30 $*"
-            curl -skv --max-time 30 "$@" 2>&1
-            rc=$?
-            echo
-            echo "CURL_EXIT=${rc}"
+            {
+              echo "==================== ${label} ===================="
+              printf 'COMMAND: curl -sv --max-time 30'
+              printf ' %q' "$@"
+              echo
+              echo
+              curl -sv --max-time 30 "$@" 2>&1
+              rc=$?
+              echo
+              echo "CURL_EXIT=${rc}"
+            } > "evidence/x402-2026-09-04/${file}.txt"
           }
 
-          probe "BoTTube x402 status" https://bottube.ai/api/x402/status
-          probe "BoTTube premium videos" https://bottube.ai/api/premium/videos
-          probe "BoTTube Sophia analytics" https://bottube.ai/api/premium/analytics/sophia-elya
-          probe "BoTTube trending export" https://bottube.ai/api/premium/trending/export
+          probe 01-bottube-x402-status "BoTTube x402 status" https://bottube.ai/api/x402/status
+          probe 02-bottube-premium-videos "BoTTube premium videos" https://bottube.ai/api/premium/videos
+          probe 03-bottube-sophia-analytics "BoTTube Sophia analytics" https://bottube.ai/api/premium/analytics/sophia-elya
+          probe 04-bottube-trending-export "BoTTube trending export" https://bottube.ai/api/premium/trending/export
+          probe 05-bottube-wallet-link-no-key "BoTTube wallet link without API key" -X POST -H 'Content-Type: application/json' --data '{}' https://bottube.ai/api/agents/me/coinbase-wallet
+          probe 06-beacon-x402-status "Beacon x402 status" https://rustchain.org/beacon/api/x402/status
+          probe 07-beacon-premium-reputation "Beacon premium reputation" https://rustchain.org/beacon/api/premium/reputation
+          probe 08-beacon-contracts-export "Beacon contracts export" https://rustchain.org/beacon/api/premium/contracts/export
+          probe 09-rustchain-swap-info "RustChain swap info" https://rustchain.org/wallet/swap-info
 
-          echo
-          echo "==================== BoTTube wallet link without API key ===================="
-          echo "COMMAND: curl -skv --max-time 30 -X POST -H 'Content-Type: application/json' --data '{}' https://bottube.ai/api/agents/me/coinbase-wallet"
-          curl -skv --max-time 30 -X POST -H 'Content-Type: application/json' --data '{}' https://bottube.ai/api/agents/me/coinbase-wallet 2>&1
-          echo
-          echo "CURL_EXIT=$?"
+          cat > evidence/x402-2026-09-04/README.md <<'EOF'
+          # RustChain bounty #351 — raw x402 integration evidence
 
-          probe "Beacon x402 status" https://rustchain.org/beacon/api/x402/status
-          probe "Beacon premium reputation" https://rustchain.org/beacon/api/premium/reputation
-          probe "Beacon contracts export" https://rustchain.org/beacon/api/premium/contracts/export
-          probe "RustChain swap info" https://rustchain.org/wallet/swap-info
+          This directory contains reproducible, full `curl -v`-style (`curl -sv`) traces, including request/response headers and complete response bodies, captured from a GitHub-hosted Ubuntu runner on 2026-09-04 UTC.
+
+          Endpoints are exactly those listed in `Scottcjn/rustchain-bounties#351`. No payment was sent and no API key was fabricated. The wallet-link route was intentionally tested without a key to verify its unauthenticated behavior.
+          EOF
+
+      - name: Commit immutable evidence
+        shell: bash
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add evidence/x402-2026-09-04
+          if git diff --cached --quiet; then
+            echo "No evidence changes to commit"
+          else
+            git commit -m "test: capture raw x402 bounty 351 evidence"
+            git push origin HEAD:bounty-x402-evidence
+          fi

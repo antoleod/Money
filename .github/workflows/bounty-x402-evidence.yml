@@ -1,0 +1,48 @@
+name: x402 bounty evidence
+
+on:
+  push:
+    branches: [bounty-x402-evidence]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Capture raw curl evidence
+        shell: bash
+        run: |
+          set +e
+          echo "TEST_UTC=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          echo "curl=$(curl --version | head -1)"
+          probe() {
+            label="$1"; shift
+            echo
+            echo "==================== ${label} ===================="
+            echo "COMMAND: curl -skv --max-time 30 $*"
+            curl -skv --max-time 30 "$@" 2>&1
+            rc=$?
+            echo
+            echo "CURL_EXIT=${rc}"
+          }
+
+          probe "BoTTube x402 status" https://bottube.ai/api/x402/status
+          probe "BoTTube premium videos" https://bottube.ai/api/premium/videos
+          probe "BoTTube Sophia analytics" https://bottube.ai/api/premium/analytics/sophia-elya
+          probe "BoTTube trending export" https://bottube.ai/api/premium/trending/export
+
+          echo
+          echo "==================== BoTTube wallet link without API key ===================="
+          echo "COMMAND: curl -skv --max-time 30 -X POST -H 'Content-Type: application/json' --data '{}' https://bottube.ai/api/agents/me/coinbase-wallet"
+          curl -skv --max-time 30 -X POST -H 'Content-Type: application/json' --data '{}' https://bottube.ai/api/agents/me/coinbase-wallet 2>&1
+          echo
+          echo "CURL_EXIT=$?"
+
+          probe "Beacon x402 status" https://rustchain.org/beacon/api/x402/status
+          probe "Beacon premium reputation" https://rustchain.org/beacon/api/premium/reputation
+          probe "Beacon contracts export" https://rustchain.org/beacon/api/premium/contracts/export
+          probe "RustChain swap info" https://rustchain.org/wallet/swap-info

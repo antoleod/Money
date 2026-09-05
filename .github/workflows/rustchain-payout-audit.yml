@@ -1,0 +1,35 @@
+name: RustChain payout audit
+
+on:
+  push:
+    paths:
+      - ".github/workflows/rustchain-payout-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check native and hosted payout ledgers
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://rustchain.org"
+          native="RTC5ecdd2fc237955506976353943049dd515d0fe3e"
+
+          echo "=== native balance ==="
+          curl -kfsS --retry 2 --connect-timeout 10 "$base/wallet/balance?miner_id=$native"
+          echo
+          echo "=== native history ==="
+          curl -kfsS --retry 2 --connect-timeout 10 "$base/wallet/history?miner_id=$native&limit=50"
+          echo
+          echo "=== hosted antoleod balance ==="
+          curl -kfsS --retry 2 --connect-timeout 10 "$base/wallet/balance?miner_id=antoleod" || true
+          echo
+          echo "=== hosted antoleod history ==="
+          curl -kfsS --retry 2 --connect-timeout 10 "$base/wallet/history?miner_id=antoleod&limit=50" || true
+          echo

@@ -1,0 +1,27 @@
+Offline demo:
+canonical_utf8: {"amount":1.25,"from":"RTC10ba682c8ad13513971e8b56881aab8bd702bb80","memo":"offline-demo","nonce":"1770000000","to":"RTC2222222222222222222222222222222222222222"}
+from_address: RTC10ba682c8ad13513971e8b56881aab8bd702bb80
+signature_valid: True
+payload:
+{
+  "amount_rtc": 1.25,
+  "chain_id": "rustchain-mainnet-v2",
+  "from_address": "RTC10ba682c8ad13513971e8b56881aab8bd702bb80",
+  "memo": "offline-demo",
+  "nonce": 1770000000,
+  "public_key": "d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737",
+  "signature": "cfb8a1ae33affe9cc21752d65a0de9a22f3a0597887bd4f66c66b00f244fddca1770723334e41c2541ddbfa39d1f92b2dc10a04c42f2fab78ae0eb050aa5f00b",
+  "to_address": "RTC2222222222222222222222222222222222222222"
+}
+
+Unit tests:
+test_address_matches_public_key_hash (test_transfer_sign_demo.TransferSigningTests.test_address_matches_public_key_hash) ... ok
+test_amount_tamper_breaks_signature (test_transfer_sign_demo.TransferSigningTests.test_amount_tamper_breaks_signature) ... ok
+test_canonical_json_has_sorted_compact_keys (test_transfer_sign_demo.TransferSigningTests.test_canonical_json_has_sorted_compact_keys) ... ok
+test_recipient_tamper_breaks_signature (test_transfer_sign_demo.TransferSigningTests.test_recipient_tamper_breaks_signature) ... ok
+test_valid_payload_verifies (test_transfer_sign_demo.TransferSigningTests.test_valid_payload_verifies) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.004s
+
+OK

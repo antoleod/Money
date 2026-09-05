@@ -1,0 +1,17 @@
+Fixture run:
+wallet: eafc6f14eab6d5c5362fe651e5e6c23581892a37RTC
+amount_rtc: 118.357193
+amount_i64: 118357193
+expected_i64: 118357193
+unit_check: OK
+
+Unit tests:
+test_documented_balance_is_consistent (test_balance_check.BalanceContractTests.test_documented_balance_is_consistent) ... ok
+test_mismatch_is_detected (test_balance_check.BalanceContractTests.test_mismatch_is_detected) ... ok
+test_more_than_six_decimals_is_rejected_on_conversion (test_balance_check.BalanceContractTests.test_more_than_six_decimals_is_rejected_on_conversion) ... ok
+test_negative_balance_is_rejected (test_balance_check.BalanceContractTests.test_negative_balance_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

@@ -1,9 +1,6 @@
 name: RustChain payout audit
 
 on:
-  push:
-    paths:
-      - ".github/workflows/rustchain-payout-audit.yml"
   workflow_dispatch:
 
 permissions:
